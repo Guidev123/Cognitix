@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="src/McpServerLocalHttp/McpServerLocalHttp.csproj" Id="2e4d7a86-8b44-44de-9340-194f5df39678" />
+  <Project Path="src/McpServerStdio/McpServerStdio.csproj" />
+  <Project Path="src/Services/Cognitx.McpClient/Cognitx.McpClient.csproj" Id="475a3134-d7f5-4b67-8e70-3b9915ea9f02" />
+</Solution>
