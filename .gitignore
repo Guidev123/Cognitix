@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/src/McpServerLocalHttp/McpServerLocalHttp.csproj
+/src/McpServerStdio/McpServerStdio.csproj
+/src/Services/Cognitx.McpClient/appsettings.Development.json
