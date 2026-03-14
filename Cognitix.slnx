@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="src/Services/Cognitx.McpClient/Cognitx.McpClient.csproj" Id="475a3134-d7f5-4b67-8e70-3b9915ea9f02" />
+  <Project Path="src/Services/Cognitx.McpServer/Cognitx.McpServer.csproj" Id="02455722-54bf-4932-b7ac-3c0b5bb5385c" />
 </Solution>
