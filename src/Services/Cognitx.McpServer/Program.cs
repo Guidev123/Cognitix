@@ -1,5 +1,7 @@
 using Cognitx.McpServer.Storage;
 using Cognitx.McpServer.Tools;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,16 @@ builder.Services.AddSingleton<TodoListTools>();
 builder.Services.AddSingleton(TimeProvider.System);
 
 builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("McpToolsScope", policy =>
+    {
+        policy.RequireScope("mcp.tools").RequireAuthenticatedUser();
+    });
+
+builder.Services
     .AddMcpServer()
     .WithHttpTransport()
     .WithTools<TodoListTools>();
@@ -20,6 +32,9 @@ var app = builder.Build();
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 app.Urls.Add($"http://+:{port}");
 
-app.MapMcp("/mcp");
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapMcp("/mcp").RequireAuthorization("McpToolsScope");
 
 app.Run();

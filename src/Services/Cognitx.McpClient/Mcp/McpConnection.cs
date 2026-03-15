@@ -1,6 +1,7 @@
 ﻿using Cognitx.McpClient.Interfaces;
 using Cognitx.McpClient.Options;
 using Microsoft.Extensions.Options;
+using Microsoft.Identity.Client;
 using ModelContextProtocol.Client;
 using ModelContextProtocolClient = ModelContextProtocol.Client.McpClient;
 
@@ -30,7 +31,7 @@ namespace Cognitx.McpClient.Mcp
 
             try
             {
-                if (logger.IsEnabled(LogLevel.Information))
+                if (logger.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Information))
                 {
                     logger.LogInformation("Connection to MCP Server at {BaseUrl}", mcpOptions.BaseUrl);
                 }
@@ -43,7 +44,7 @@ namespace Cognitx.McpClient.Mcp
 
                 _mcpClient = await ModelContextProtocolClient.CreateAsync(transport, cancellationToken: cancellationToken);
 
-                if (logger.IsEnabled(LogLevel.Information))
+                if (logger.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Information))
                 {
                     logger.LogInformation("Successfully connected to MCP Server");
                 }

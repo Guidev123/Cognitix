@@ -6,5 +6,6 @@
 
         public string BaseUrl { get; set; } = null!;
         public int TimeoutSeconds { get; set; }
+        public string Scope { get; set; } = null!;
     }
 }

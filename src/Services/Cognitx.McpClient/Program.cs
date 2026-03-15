@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 
+builder.AddSecurity();
 builder.AddMcpClientInfrastructure();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddProblemDetails();
@@ -24,6 +25,9 @@ app.UseExceptionHandler();
 app.UseCors();
 
 app.MapOpenApi();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapChatEndpoints();
 
