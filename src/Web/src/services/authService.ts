@@ -1,57 +1,38 @@
-import { PublicClientApplication, type AuthenticationResult, InteractionRequiredAuthError } from "@azure/msal-browser";
-import { msalConfig, loginRequest } from "../config/msalConfig";
+import { type PublicClientApplication, InteractionRequiredAuthError } from "@azure/msal-browser";
+import { loginRequest } from "../config/msalConfig";
 
 class AuthService {
-  private msalInstance: PublicClientApplication;
+  private msalInstance: PublicClientApplication | null = null;
 
-  constructor() {
-    this.msalInstance = new PublicClientApplication(msalConfig);
+  setInstance(instance: PublicClientApplication) {
+    this.msalInstance = instance;
   }
 
-  async initialize() {
-    await this.msalInstance.initialize();
-  }
-
-  async login(): Promise<AuthenticationResult | null> {
-    try {
-      return await this.msalInstance.loginPopup(loginRequest);
-    } catch (error) {
-      console.error("Login failed:", error);
-      throw error;
-    }
-  }
-
-  async logout() {
-    await this.msalInstance.logoutPopup();
+  private getInstance(): PublicClientApplication {
+    if (!this.msalInstance) throw new Error("MSAL instance not set. Call setInstance first.");
+    return this.msalInstance;
   }
 
   async getToken(): Promise<string | null> {
-    const accounts = this.msalInstance.getAllAccounts();
+    const msal = this.getInstance();
+    const accounts = msal.getAllAccounts();
     if (accounts.length === 0) return null;
 
     try {
-      const result = await this.msalInstance.acquireTokenSilent({
+      const result = await msal.acquireTokenSilent({
         ...loginRequest,
         account: accounts[0],
       });
       return result.accessToken;
     } catch (error) {
-      if (error instanceof InteractionRequiredAuthError) {
-        // Token expired or interaction required
-        return null;
-      }
+      if (error instanceof InteractionRequiredAuthError) return null;
       console.error("Token acquisition failed:", error);
       return null;
     }
   }
 
   getAccount() {
-    const accounts = this.msalInstance.getAllAccounts();
-    return accounts.length > 0 ? accounts[0] : null;
-  }
-
-  getInstance() {
-    return this.msalInstance;
+    return this.getInstance().getAllAccounts()[0] ?? null;
   }
 }
 

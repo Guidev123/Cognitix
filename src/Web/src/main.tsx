@@ -2,6 +2,7 @@ import ReactDOM from 'react-dom/client'
 import { PublicClientApplication, EventType } from '@azure/msal-browser'
 import { MsalProvider } from '@azure/msal-react'
 import { msalConfig } from './config/msalConfig'
+import { authService } from './services/authService'
 import App from './App.tsx'
 import './index.css'
 
@@ -22,8 +23,10 @@ const renderApp = () => {
 
 msalInstance.initialize()
   .then(() => {
+    authService.setInstance(msalInstance);
+
     console.log("MSAL initialized");
-    
+
     if (!msalInstance.getActiveAccount() && msalInstance.getAllAccounts().length > 0) {
       msalInstance.setActiveAccount(msalInstance.getAllAccounts()[0]);
     }

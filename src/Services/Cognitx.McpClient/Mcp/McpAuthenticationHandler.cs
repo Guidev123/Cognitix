@@ -90,7 +90,7 @@ namespace Cognitx.McpClient.Mcp
 
             var httpContext = httpContextAccessor.HttpContext;
             if (httpContext is null) return null;
-            if (httpContext.User.Identity?.IsAuthenticated is true) return null;
+            if (httpContext.User.Identity?.IsAuthenticated is not true) return null;
 
             var authHeader = httpContext.Request.Headers.Authorization.ToString();
             if (string.IsNullOrWhiteSpace(authHeader)
