@@ -1,7 +1,7 @@
 import type { ChatRequest, ChatResponse } from "../types/chat";
 import { authService } from "./authService";
 
-const API_BASE_URL = "https://localhost:5001";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 class ChatService {
   async sendMessage(message: string, conversationId?: string): Promise<ChatResponse> {

@@ -1,4 +1,6 @@
-﻿namespace Cognitx.McpClient.Chat
+﻿using Cognitx.McpClient.Interfaces;
+
+namespace Cognitx.McpClient.Chat
 {
     public static class ChatEndpoint
     {

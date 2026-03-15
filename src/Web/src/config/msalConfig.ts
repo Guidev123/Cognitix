@@ -2,8 +2,8 @@ import { type Configuration, LogLevel } from "@azure/msal-browser";
 
 export const msalConfig: Configuration = {
   auth: {
-    clientId: "<FRONTEND_CLIENT_ID>",
-    authority: "https://login.microsoftonline.com/<AZURE_TENANT_ID>",
+    clientId: import.meta.env.VITE_FRONTEND_CLIENT_ID,
+    authority: `https://login.microsoftonline.com/${import.meta.env.VITE_AZURE_TENANT_ID}`,
     redirectUri: window.location.origin,
     postLogoutRedirectUri: window.location.origin,
   },
@@ -14,9 +14,8 @@ export const msalConfig: Configuration = {
   system: {
     loggerOptions: {
       loggerCallback: (level, message, containsPii) => {
-        if (containsPii) {
-          return;
-        }
+        if (containsPii) return;
+
         switch (level) {
           case LogLevel.Error:
             console.error(message);
@@ -30,8 +29,6 @@ export const msalConfig: Configuration = {
           case LogLevel.Warning:
             console.warn(message);
             return;
-          default:
-            return;
         }
       },
     },
@@ -39,5 +36,5 @@ export const msalConfig: Configuration = {
 };
 
 export const loginRequest = {
-  scopes: ["api://<FRONTEND_CLIENT_ID>/access_as_user"],
+  scopes: [`api://${import.meta.env.VITE_FRONTEND_CLIENT_ID}/access_as_user`],
 };

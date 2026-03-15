@@ -1,7 +1,8 @@
-﻿using Microsoft.Agents.AI;
+﻿using Cognitx.McpClient.Interfaces;
+using Microsoft.Agents.AI;
 using System.Collections.Concurrent;
 
-namespace Cognitx.McpClient.Chat
+namespace Cognitx.McpClient.Storage
 {
     public sealed class ConversationStore : IConversationStore
     {

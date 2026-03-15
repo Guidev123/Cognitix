@@ -1,4 +1,6 @@
-﻿namespace Cognitx.McpClient.Chat
+﻿using Cognitx.McpClient.Chat;
+
+namespace Cognitx.McpClient.Interfaces
 {
     public interface IAgentService
     {
