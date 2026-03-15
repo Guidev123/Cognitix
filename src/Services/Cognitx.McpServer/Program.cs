@@ -1,3 +1,4 @@
+using Cognitx.McpServer.Resources;
 using Cognitx.McpServer.Storage;
 using Cognitx.McpServer.Tools;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -10,6 +11,7 @@ builder.Services.Configure<StorageOptions>(
 
 builder.Services.AddSingleton<StorageClient>();
 builder.Services.AddSingleton<TodoListTools>();
+builder.Services.AddSingleton<TodoResources>();
 builder.Services.AddSingleton(TimeProvider.System);
 
 builder.Services
@@ -25,6 +27,7 @@ builder.Services.AddAuthorizationBuilder()
 builder.Services
     .AddMcpServer()
     .WithHttpTransport()
+    .WithResources<TodoResources>()
     .WithTools<TodoListTools>();
 
 var app = builder.Build();
