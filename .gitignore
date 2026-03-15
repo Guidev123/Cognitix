@@ -365,3 +365,6 @@ FodyWeavers.xsd
 /src/McpServerStdio/McpServerStdio.csproj
 /src/Services/Cognitx.McpClient/appsettings.Development.json
 /src/Services/Cognitx.McpServer/appsettings.Development.json
+
+# misc
+/src/Web/.env
