@@ -19,6 +19,12 @@ A reference implementation of a secured, end-to-end Model Context Protocol (MCP)
 
 The **WebApp** authenticates the user via MSAL and acquires a bearer token scoped to the McpClient API. The **McpClient** validates that token, then performs an On-Behalf-Of (OBO) exchange to acquire a downstream token scoped to `mcp.tools` before forwarding requests to the **McpServer**. The McpServer exposes MCP Tools and Resources over HTTP transport, backed by Azure Table Storage.
 
+https://github.com/user-attachments/assets/703144ac-06a7-4c7d-a7d9-dcee7dcf6f37
+
+
+
+
+
 ## Repository Structure
 
 ```
