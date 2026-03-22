@@ -13,6 +13,7 @@ builder.Services.AddSingleton<StorageClient>();
 builder.Services.AddSingleton<TodoListTools>();
 builder.Services.AddSingleton<TodoResources>();
 builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddHttpContextAccessor();
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

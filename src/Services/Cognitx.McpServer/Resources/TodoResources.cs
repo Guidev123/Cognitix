@@ -1,4 +1,5 @@
-﻿using Cognitx.McpServer.Models;
+﻿using Cognitx.McpServer.Extensions;
+using Cognitx.McpServer.Models;
 using Cognitx.McpServer.Storage;
 using ModelContextProtocol.Server;
 using NJsonSchema;
@@ -10,15 +11,8 @@ using System.Text.Json;
 namespace Cognitx.McpServer.Resources
 {
     [McpServerResourceType]
-    public class TodoResources
+    public class TodoResources(StorageClient storageClient, IHttpContextAccessor httpContextAccessor)
     {
-        private readonly StorageClient _storageClient;
-
-        public TodoResources(StorageClient storageClient)
-        {
-            _storageClient = storageClient;
-        }
-
         private static readonly SystemTextJsonSchemaGeneratorSettings SchemaSettings = new()
         {
             AlwaysAllowAdditionalObjectProperties = false,
@@ -41,7 +35,7 @@ namespace Cognitx.McpServer.Resources
         [Description("A real-time dashboard showing high-level statistics about the todo system.")]
         public async Task<string> GetStatsDashboard()
         {
-            var result = await _storageClient.ListTodosAsync(limit: 1000);
+            var result = await storageClient.ListTodosAsync(httpContextAccessor.GetUserEmail(), limit: 1000);
             var sb = new StringBuilder();
             sb.AppendLine("# Todo System Dashboard");
             sb.AppendLine();

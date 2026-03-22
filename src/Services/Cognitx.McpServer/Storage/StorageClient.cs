@@ -13,7 +13,6 @@ namespace Cognitx.McpServer.Storage
         public StorageClient(IOptions<StorageOptions> storageOptions, TimeProvider timeProvider)
         {
             _storageOptions = storageOptions.Value;
-
             _tableClient = CreateTableClient();
             _timeProvider = timeProvider;
         }
@@ -29,19 +28,19 @@ namespace Cognitx.McpServer.Storage
             return client;
         }
 
-        public async Task<Todo> AddTodoAsync(string text)
+        public async Task<Todo> AddTodoAsync(string userEmail, string text)
         {
-            var todo = new Todo(text, TodoStatusEnum.Pending, _timeProvider.GetUtcNow());
-
+            var todo = new Todo(userEmail, text, TodoStatusEnum.Pending, _timeProvider.GetUtcNow());
             await _tableClient.AddEntityAsync(todo);
+
             return todo;
         }
 
-        public async Task<Todo?> GetTodoAsync(string todoId)
+        public async Task<Todo?> GetTodoAsync(string userEmail, string todoId)
         {
             try
             {
-                var response = await _tableClient.GetEntityAsync<Todo>(Todo.DefaultPartitionKey, todoId);
+                var response = await _tableClient.GetEntityAsync<Todo>(userEmail, todoId);
                 return response.Value;
             }
             catch (Azure.RequestFailedException ex) when (ex.Status == 404)
@@ -50,11 +49,11 @@ namespace Cognitx.McpServer.Storage
             }
         }
 
-        public async Task<bool> DeleteTodoAsync(string todoId)
+        public async Task<bool> DeleteTodoAsync(string userEmail, string todoId)
         {
             try
             {
-                await _tableClient.DeleteEntityAsync(Todo.DefaultPartitionKey, todoId);
+                await _tableClient.DeleteEntityAsync(userEmail, todoId);
                 return true;
             }
             catch (Azure.RequestFailedException ex) when (ex.Status == 404)
@@ -63,9 +62,9 @@ namespace Cognitx.McpServer.Storage
             }
         }
 
-        public async Task<Todo> CompleteTodoAsync(string todoId)
+        public async Task<Todo> CompleteTodoAsync(string userEmail, string todoId)
         {
-            var todo = await GetTodoAsync(todoId);
+            var todo = await GetTodoAsync(userEmail, todoId);
             if (todo == null)
                 throw new InvalidOperationException($"Todo with id '{todoId}' not found");
 
@@ -75,9 +74,9 @@ namespace Cognitx.McpServer.Storage
             return todo;
         }
 
-        public async Task<Todo> ReopenTodoAsync(string todoId)
+        public async Task<Todo> ReopenTodoAsync(string userEmail, string todoId)
         {
-            var todo = await GetTodoAsync(todoId);
+            var todo = await GetTodoAsync(userEmail, todoId);
             if (todo == null)
                 throw new InvalidOperationException($"Todo with id '{todoId}' not found");
 
@@ -87,9 +86,9 @@ namespace Cognitx.McpServer.Storage
             return todo;
         }
 
-        public async Task<Todo> SetPriorityAsync(string todoId, int priority)
+        public async Task<Todo> SetPriorityAsync(string userEmail, string todoId, int priority)
         {
-            var todo = await GetTodoAsync(todoId);
+            var todo = await GetTodoAsync(userEmail, todoId);
             if (todo == null)
                 throw new InvalidOperationException($"Todo with id '{todoId}' not found");
 
@@ -99,9 +98,9 @@ namespace Cognitx.McpServer.Storage
             return todo;
         }
 
-        public async Task<Todo> SetDueDateAsync(string todoId, DateTimeOffset dueDate)
+        public async Task<Todo> SetDueDateAsync(string userEmail, string todoId, DateTimeOffset dueDate)
         {
-            var todo = await GetTodoAsync(todoId);
+            var todo = await GetTodoAsync(userEmail, todoId);
             if (todo == null)
                 throw new InvalidOperationException($"Todo with id '{todoId}' not found");
 
@@ -111,9 +110,9 @@ namespace Cognitx.McpServer.Storage
             return todo;
         }
 
-        public async Task<Todo> AddNoteAsync(string todoId, string note)
+        public async Task<Todo> AddNoteAsync(string userEmail, string todoId, string note)
         {
-            var todo = await GetTodoAsync(todoId);
+            var todo = await GetTodoAsync(userEmail, todoId);
             if (todo == null)
                 throw new InvalidOperationException($"Todo with id '{todoId}' not found");
 
@@ -127,6 +126,7 @@ namespace Cognitx.McpServer.Storage
         }
 
         public async Task<TodoListResponse> ListTodosAsync(
+            string userEmail,
             TodoStatusEnum? status = null,
             int? priority = null,
             DateTimeOffset? dueBefore = null,
@@ -134,11 +134,12 @@ namespace Cognitx.McpServer.Storage
             string? cursor = null)
         {
             var results = new List<Todo>();
-            var query = _tableClient.QueryAsync<Todo>(entity => entity.PartitionKey == Todo.DefaultPartitionKey);
+            var query = _tableClient.QueryAsync<Todo>(
+                entity => entity.PartitionKey == userEmail);
 
             await foreach (var todo in query)
             {
-                if (status.HasValue && todo.Status != status.Value)
+                if (status.HasValue && status.Value != TodoStatusEnum.None && todo.Status != status.Value)
                     continue;
 
                 if (priority.HasValue && todo.Priority != priority.Value)
@@ -167,17 +168,19 @@ namespace Cognitx.McpServer.Storage
         }
 
         public async Task<TodoListResponse> FindTodosAsync(
+            string userEmail,
             string query,
             TodoStatusEnum? status = null,
             int limit = 50,
             string? cursor = null)
         {
             var allResults = new List<Todo>();
-            var tableQuery = _tableClient.QueryAsync<Todo>(entity => entity.PartitionKey == Todo.DefaultPartitionKey);
+            var tableQuery = _tableClient.QueryAsync<Todo>(
+                entity => entity.PartitionKey == userEmail);
 
             await foreach (var todo in tableQuery)
             {
-                if (status.HasValue && todo.Status != status.Value)
+                if (status.HasValue && status.Value != TodoStatusEnum.None && todo.Status != status.Value)
                     continue;
 
                 var searchText = query.ToLowerInvariant();

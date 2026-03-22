@@ -7,15 +7,14 @@ namespace Cognitx.McpServer.Models
     public sealed class Todo : ITableEntity
     {
         public const string TableName = "Todos";
-        public const string DefaultPartitionKey = "default";
 
         [JsonConstructor]
         public Todo()
         { }
 
-        public Todo(string text, TodoStatusEnum status, DateTimeOffset createdUtc)
+        public Todo(string userEmail, string text, TodoStatusEnum status, DateTimeOffset createdUtc)
         {
-            PartitionKey = DefaultPartitionKey;
+            PartitionKey = userEmail;
             RowKey = Guid.NewGuid().ToString();
             Text = text;
             Status = status;
